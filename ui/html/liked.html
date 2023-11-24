@@ -1,0 +1,82 @@
+{{template "base" .}}
+
+<body>
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">FORUM</a>
+            </div>
+
+            <ul class="nav navbar-nav navbar-right">
+
+                <li><a href="/post/create"><span class="glyphicon glyphicon-plus" data-toggle="tooltip"
+                            title="Create Post"></span></a></li>
+                <li><a href="/created"> Created Posts</a></li>
+                <li><a href="/mylikes"> Liked Posts</a></li>
+
+                <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> LogOut</a></li>
+            </ul>
+
+        </div>
+    </nav>
+
+
+
+
+    {{range .Posts}}
+    <div class="panel panel-default outer container">
+
+        <div class="panel-body">
+            <!-- <div class="container"> -->
+            <div class="media">
+                <div class="media-left">
+                    <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
+                        class="media-object" style="width:45px">
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">{{.AuthorName}} <small><i>Posted {{.Time}}</i></small></h4>
+                    <div class="lead">
+                        <a href="/post?id={{.Id}}">{{.Title}}</a>
+                    </div>
+                    <p style="color:#304057c9; font-size: 12px;"><i> {{range .Categories}} #{{.}} &nbsp; {{end}}</i>
+                    </p>
+                </div>
+                <hr style="margin-top: 0px;">
+                <p style=" white-space: pre-line;">{{.Content}} </p>
+            </div>
+            <!-- </div> -->
+
+        </div>
+
+
+
+
+
+
+    </div>
+    {{end}}
+
+
+
+    <div id="demoB">
+
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var scrollpos = localStorage.getItem("scrollpos");
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onscroll = function (e) {
+            localStorage.setItem("scrollpos", window.scrollY);
+        };
+    </script>
+
+
+
+</body>
+
+</html>

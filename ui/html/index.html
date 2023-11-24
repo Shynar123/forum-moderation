@@ -1,0 +1,223 @@
+{{template "base" .}}
+{{$role:=.Role}}
+
+<body>
+  {{$logged:=.IsLoggedin}}
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">FORUM</a>
+      </div>
+      {{if eq .Role "Administrator"}}
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/roles">Users</a>
+      </div>
+      {{end}}
+      <ul class="nav navbar-nav navbar-right">
+        {{if eq $role "Administrator"}}
+        <li><a href="/messages"><span class="glyphicon glyphicon-envelope"></span> <span class="badge"
+              style="font-size:15px">1</span></a></li>
+              {{else if eq $role "Moderator"}}
+              <li><a href="/responses"><span class="glyphicon glyphicon-envelope"></span> <span class="badge"
+                style="font-size:15px">1</span></a></li>
+        {{end}}
+
+        {{if $logged}}
+        <li><a href="/post/create"><span class="glyphicon glyphicon-plus" style="font-size: 20px;" data-toggle="tooltip"
+              title="Create Post"></span></a></li>
+        <li><a href="/created"> Created Posts</a></li>
+        <li><a href="/mylikes"> Liked Posts</a></li>
+        {{if eq .Role "User"}}
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{.Role}}
+            <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+
+
+            {{if eq .Status "applied"}}
+            <li>
+              <p>Your application is pending</p>
+            </li>
+            {{else if eq .Status "denied"}}
+            <li>
+              <p>Your application has been declined</p>
+            </li>
+            {{else}}
+            <!-- <li><button type="submit" class="btn btn-default" formaction="/apply" data-toggle="modal" data-target="#myModal">Apply for Moderator</button></li> -->
+            <li><a href="/apply">Apply for Moderator</a></li>
+            {{end}}
+          </ul>
+        </li>
+
+        {{else}}
+        <li>
+          <p class="navbar-brand">{{.Role}}</p>
+        </li>
+        {{end}}
+        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> LogOut</a></li>
+
+
+        {{else}}
+        <li>
+          <p class="navbar-brand">Guest</p>
+        </li>
+        <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="/signin"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        {{end}}
+      </ul>
+
+    </div>
+  </nav>
+  <div class="panel panel-default">
+    <div class="panel-body text-center">
+      <form id="postForm">
+        Categories:
+        {{range .Categories}}
+        <label class="checkbox-inline"><input type="checkbox" name="categories" value={{.}}>{{.}}</label>
+        {{end}}
+
+        <label class="checkbox-inline"><input type="checkbox" name="categories"
+            value="Technologies">Technologies</label>
+        <label class="checkbox-inline"><input type="checkbox" name="categories" value="Art">Art</label>
+        <label class="checkbox-inline"><input type="checkbox" name="categories" value="Travel">Travel</label>
+        <label class="checkbox-inline"><input type="checkbox" name="categories" value="Other">Other</label>
+        <input type="Submit" class="btn btn-info" value="Choose">
+      </form>
+      {{if eq $role "Administrator"}}
+      <!-- или edit и потом там можно добавлять и удалять -->
+      <a href="/post/create"><span class="glyphicon glyphicon-plus" style="font-size: 20px;"></span>Add category</a>
+
+      {{end}}
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Получаем параметры из URL
+      var params = new URLSearchParams(window.location.search);
+
+      // Получаем значения параметра "filter"
+      var filterValues = params.getAll("category");
+
+      // Проходимся по всем чекбоксам и выбираем те, которые соответствуют значениям параметра "filter"
+      var checkboxes = document.querySelectorAll('input[name="categories"]');
+      checkboxes.forEach(function (checkbox) {
+        if (filterValues.includes(checkbox.value)) {
+          checkbox.checked = true;
+        }
+      });
+    });
+  </script>
+
+  <script>
+    document.getElementById("postForm").addEventListener("submit", function (event) {
+      event.preventDefault(); // Предотвращаем стандартное действие отправки формы
+
+      // Получаем выбранные чекбоксы
+      var selectedCategories = [];
+      var checkboxes = document.querySelectorAll('input[name="categories"]:checked');
+      checkboxes.forEach(function (checkbox) {
+        selectedCategories.push(checkbox.value);
+      });
+
+      // Создаем URL-путь с параметрами
+      var filters = selectedCategories.map(function (category) {
+        return "category=" + encodeURIComponent(category);
+      });
+      var url = "/?" + filters.join("&");
+
+      // Переходим по созданному URL
+      window.location.href = url;
+    });
+  </script>
+
+
+
+
+
+  {{range .Posts}}
+  {{if eq $role "Moderator"}}
+  {{if eq .Status "created"}}
+  <div class="panel panel-default outer container">
+    <form method="POST" action="/post_moderator">
+      <input type="hidden" name="post_id" value={{.Id}}>
+      <input type="submit" name="button" value="Accept" class="btn btn-success pull-right">
+      <input type="submit" name="button" value="Delete" class="btn btn-danger pull-right">
+    </form>
+    <!-- add buttons accept delete -->
+    <div class="panel-body">
+      <!-- <div class="container"> -->
+      <div class="media">
+
+        <div class="media-left">
+
+          <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
+            class="media-object" style="width:45px">
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">{{.AuthorName}} <small><i>Posted {{.Time}}</i></small></h4>
+          <div class="lead">
+            <a href="/post?id={{.Id}}">{{.Title}}</a>
+          </div>
+
+          <p style="color:#304057c9; font-size: 12px;"><i> {{range .Categories}} #{{.}} &nbsp; {{end}}</i></p>
+        </div>
+        <hr style="margin-top: 0px;">
+        <p style=" white-space: pre-line;">{{.Content}} </p>
+      </div>
+      <!-- </div> -->
+    </div>
+  </div>
+  {{end}}
+
+  {{end}}
+  {{if eq .Status "approved"}}
+  <div class="panel panel-default outer container">
+    <div class="panel-body">
+      <!-- <div class="container"> -->
+      <div class="media">
+
+        <div class="media-left">
+
+          <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
+            class="media-object" style="width:45px">
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">{{.AuthorName}} <small><i>Posted {{.Time}}</i></small></h4>
+          <div class="lead">
+            <a href="/post?id={{.Id}}">{{.Title}}</a>
+          </div>
+
+          <p style="color:#304057c9; font-size: 12px;"><i> {{range .Categories}} #{{.}} &nbsp; {{end}}</i></p>
+        </div>
+        <hr style="margin-top: 0px;">
+        <p style=" white-space: pre-line;">{{.Content}} </p>
+      </div>
+      <!-- </div> -->
+    </div>
+  </div>
+  {{end}}
+  {{end}}
+
+
+
+  <div id="demoB">
+
+  </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function (event) {
+      var scrollpos = localStorage.getItem("scrollpos");
+      if (scrollpos) window.scrollTo(0, scrollpos);
+    });
+
+    window.onscroll = function (e) {
+      localStorage.setItem("scrollpos", window.scrollY);
+    };
+  </script>
+
+
+
+</body>
+
+</html>

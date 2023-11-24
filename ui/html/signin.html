@@ -1,0 +1,91 @@
+{{template "base" .}}
+
+<body>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+  <nav class="navbar navbar-default">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">FORUM</a>
+    </div>
+  </nav>
+
+  <div class="col-sm-3"></div>
+  <div class="container col-sm-6">
+    <form method="POST" class="form-horizontal">
+
+      <fieldset>
+        <div class="row">
+          <h2 style="text-align:center">Login with Social Media or Manually</h2>
+
+
+          {{if .Errtext}}
+          <div class="alert alert-warning">
+            {{.Errtext}}
+          </div>
+          {{end}}
+
+          <div class="vl">
+            <span class="vl-innertext">or</span>
+          </div>
+          <div class="col">
+            <a href="/google/login" class="google btns"><i class="fa fa-google fa-fw">
+              </i> Login with Google+
+            </a>
+
+            <a href="/github/login" class="github btns"><i class="fa fa-github fa-fw">
+              </i> Login with Github
+            </a>
+
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="username">Username:</label>
+              <input type="text" name="username" class="form-control" id="username" maxlength="20"
+                placeholder="Enter username" required>
+
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" name="password" class="form-control" id="password" placeholder="Enter password"
+                required>
+
+            </div>
+
+            <input type="submit" value="Submit" class="btns btn-info">
+            <input type="reset" class="btns btn-info">
+
+          </div>
+
+        </div>
+        <div class="bottom-container">
+
+          <div class="row">
+            Don't have an account? <a href="/signup" class="btn btn-info" role="button">Sign up</a>
+          </div>
+        </div>
+      </fieldset>
+
+    </form>
+
+
+  </div>
+  <div class="col-sm-3"></div>
+  <!-- <div class="container">
+    <h1>Sign in</h1>
+    <form method="post" action="/">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" placeholder="Enter username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" autocomplete="off" placeholder="Enter password" required>
+      </div>
+    
+        <button type="button">Sign in</button>
+    </form>
+  </div> -->
+
+</body>
+
+</html>

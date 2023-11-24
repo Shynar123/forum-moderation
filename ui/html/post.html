@@ -1,0 +1,201 @@
+{{template "base" .}}
+{{$role:=.Role}}
+<body>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">FORUM</a>
+      </div>
+
+      <ul class="nav navbar-nav navbar-right">
+        {{if .IsLoggedin}}
+        <li><a href="/post/create" span class="glyphicon glyphicon-plus" data-toggle="tooltip"
+            title="Create Post"></span></a></li>
+        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> LogOut</a></li>
+
+        {{else}}
+        <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="/signin"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        {{end}}
+      </ul>
+
+    </div>
+  </nav>
+
+  <div class="panel panel-default outer container">
+
+  
+      {{if eq $role "Moderator"}}
+        <div class="pull-right">
+          <form method="POST" action="/post/delete">
+            <input type="hidden" name="post_id" value={{.Post.Id}}>
+            <input type="hidden" name="post_mod" value="delete">
+            <button type="submit"><span class="glyphicon glyphicon-trash" data-toggle="tooltip"
+                title="Delete Post"></span></button>
+  
+          </form>
+          <form method="POST" action="/report/">
+            <input type="hidden" name="post_id" value={{.Post.Id}}>
+            <input type="hidden" name="post_title" value={{.Post.Title}}>
+           
+            <div class="dropdown">
+              <button for="report" type="submit" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-alert" data-toggle="tooltip"
+                title="Report Comment"></span><span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><input type="submit" name="report_type" value="Irrelevant" style="border:0;background-color:white;"></li>
+                  <li role="presentation" class="divider"></li>
+                  <li><input type="submit" name="report_type" value="Obscene" style="border:0;background-color:white;"></li>
+                  <li role="presentation" class="divider"></li>
+                  <li><input type="submit" name="report_type" value="Illegal" style="border:0;background-color:white;"></li>
+                  <li role="presentation" class="divider"></li>
+                  <li><input type="submit" name="report_type" value="Insulting" style="border:0;background-color:white;"></li>
+                </ul>
+
+            </div>
+            
+          </form>
+        </div>
+        {{else if eq $role "Administrator"}}
+        <div class="pull-right">
+          <form method="POST" action="/post/delete">
+            <input type="hidden" name="post_id" value={{.Post.Id}}>
+            <input type="hidden" name="post_mod" value="delete">
+            <button type="submit"><span class="glyphicon glyphicon-trash" data-toggle="tooltip"
+                title="Delete Post"></span></button>
+  
+          </form>
+        </div>
+        {{end}}
+
+      <br><br>
+      <div class="media">
+        <div class="media-left media-top">
+          <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
+            class="media-object" style="width:80px">
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading"><b>{{.Post.AuthorName}} </b> <small><i>Posted {{.Post.Time}}</i></small></h4>
+          <p style="font-size: 20px;"><b>{{.Post.Title}}</b></p>
+          <p style="color:#304057c9"><i> {{range .Post.Categories}} #{{.}} &nbsp; {{end}}</i></p>
+  
+        </div>
+        <hr>
+        <br>
+        <p style="font-size: 15px; white-space: pre-line;">{{.Post.Content}}</p>
+  
+      </div>
+  
+  
+      <div class="likes">
+        <span>
+          <form method="POST" action="/post/like">
+            <input type="hidden" name="post_id" value={{.Post.Id}}>
+            <input type="hidden" name="status" value="like">
+            <button type="submit"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true">{{.Post.Likes}}</i></button>
+          </form>
+        </span>
+        <span>
+          <form method="POST" action="/post/like">
+            <input type="hidden" name="post_id" value={{.Post.Id}}>
+            <input type="hidden" name="status" value="dislike">
+            <button type="submit"><i class="fa fa-thumbs-down fa-lg" aria-hidden="true">{{.Post.Dislikes}}</i></button>
+          </form>
+        </span>
+      </div>
+  
+      <br><br>
+      <h4><strong>Comments:</strong></h4>
+        {{range .Post.Comments}}
+        <div class="media">
+          {{if eq $role "Moderator"}}
+        <div class="pull-right">
+          <form method="POST" action="/comment/delete">
+            <input type="hidden" name="post_id" value={{.PostId}}>
+            <input type="hidden" name="comment_id" value={{.Id}}>
+            <input type="hidden" name="comment_mod" value="delete">
+            <button type="submit"><span class="glyphicon glyphicon-trash" data-toggle="tooltip"
+                title="Delete Comment"></span></button>
+  
+          </form>
+          <form method="POST" action="/comment/report">
+            <input type="hidden" name="post_id" value={{.PostId}}>
+            <input type="hidden" name="comment_id" value={{.Id}}>
+            <input type="hidden" name="comment_mod" value="report">
+  
+            <button type="submit"><span class="glyphicon glyphicon-alert" data-toggle="tooltip"
+                title="Report Comment"></span></button>
+          </form>
+        </div>
+        {{else if eq $role "Administrator"}}
+        <div class="pull-right">
+          <form method="POST" action="/comment/delete">
+            <input type="hidden" name="post_id" value={{.PostId}}>
+            <input type="hidden" name="comment_id" value={{.Id}}>
+            <input type="hidden" name="comment_mod" value="delete">
+            <button type="submit"><span class="glyphicon glyphicon-trash" data-toggle="tooltip"
+                title="Delete Comment"></span></button>
+  
+          </form>
+        </div>
+        {{end}}
+
+          <div class="media-left">
+            <img src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000"
+              class="media-object" style="width:45px">
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading">{{.Username}} <small><i>Posted {{.Time}}</i></small></h4>
+          </div>
+          <hr style="margin-top: 0px;">
+          <p style=" white-space: pre-line;">{{.Content}} </p>
+          <div class="likes-comment">
+            <span>
+              <form method="POST" action="/comment/like">
+                <input type="hidden" name="post_id" value={{.PostId}}>
+                <input type="hidden" name="comment_id" value={{.Id}}>
+                <input type="hidden" name="status" value="dislike">
+                <button type="submit"><i class="fa fa-thumbs-down fa-lg" aria-hidden="true">{{.Dislikes}}</i></button>
+              </form>
+            </span>
+            <span>
+              <form method="POST" action="/comment/like">
+                <input type="hidden" name="post_id" value={{.PostId}}>
+                <input type="hidden" name="comment_id" value={{.Id}}>
+                <input type="hidden" name="status" value="like">
+                <button type="submit"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true">{{.Likes}}</i></button>
+              </form>
+            </span>
+            
+          </div>
+        </div>
+        {{end}}
+      
+      
+      {{if .IsLoggedin}}
+      <form method="POST" action="comment/create">
+        <div class="form-group">
+          <label for="comment">Comment:</label>
+          <input type="hidden" name="post_id" value={{.Post.Id}}>
+
+          <input type="text" name="text" class="form-control" id="comment" required>
+          <div class="container-fluid commentBut">
+            <input type="submit" value="Submit" class="btn btn-info pull-right">
+          </div>
+  
+        </div>
+      </form>
+      {{else}}
+      {{end}}
+
+  </div>
+
+
+
+  </div>
+
+
+
+
+</body>
+
+</html>

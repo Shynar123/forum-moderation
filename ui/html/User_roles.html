@@ -1,0 +1,45 @@
+{{template "base" .}}
+{{$role:=.Role}}
+
+<body>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">FORUM</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container" style="padding:0;background-color: white;">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+      <ul class="list-group">
+        {{range .Users}}
+        <li class="list-group-item">{{.Username}}
+          {{if eq $role "Administrator"}}
+          <form method="POST" class="pull-right">
+            <input type="hidden" name="username" value={{.Username}}>
+            <select name="roles" id="roles">
+              <option value={{.Role}} selected>{{.Role}} </option>
+              {{if eq .Role "Moderator"}}
+              <option value="User">User</option>
+              {{else}}
+              <option value="Moderator">Moderator</option>
+              {{end}}
+            </select>
+            <input type="submit" value="Change role" class="btn btn-info" style="padding:2px;">
+          </form>
+          {{else}}
+          <span class="badge">{{.Role}}</span>
+          {{end}}
+        </li>
+        {{end}}
+      </ul>
+    </div>
+
+    <div class="col-sm-3"></div>
+  </div>
+
+
+</body>
